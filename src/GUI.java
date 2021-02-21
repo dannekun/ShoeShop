@@ -1,3 +1,4 @@
+import javax.management.Query;
 import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.Scanner;
@@ -14,11 +15,23 @@ public class GUI {
 
 
     Connection con = null;
+    ResultSet rs;
+    Statement stmt;
 
+    Scanner in = new Scanner(System.in);
 
+    int purchase = 0;
+
+    String purchaseNr;
+
+    //LAST_INSERT_ID;
+    //LAST_INSERT_ID-1;
+
+    String username = "daniel";
+    String password;
     public void connectToAndQueryDatabase(String username, String
             password) throws SQLException {
-        Statement stmt;
+
 
         try {
             con = DriverManager.getConnection("jdbc:mysql://localhost/database_webshop", username, password);
@@ -26,19 +39,67 @@ public class GUI {
             throwables.printStackTrace();
         }
         stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT namn from produkt");
+
+
+        selectAllProducts();
+
+    }
+
+    public void selectAllProducts() throws SQLException {
+        int y = 0;
+        int product;
+
+        rs = stmt.executeQuery("SELECT namn from produkt");
         while (rs.next()) {
+            y++;
             String x = rs.getString("namn");
-            System.out.println(x);
+            System.out.println(y+". " +x);
         }
+
+        product = Integer.parseInt(in.next());
+
+        purchaseProduct(product);
 
 
     }
 
 
 
+public void purchaseProduct(int produktid) throws SQLException {
+    CallableStatement stm;
+    if (purchase == 0){
+            stm = con.prepareCall("call AddToCart((SELECT id from kund where förnamn = ?), 9 ,?)");
+            stm.setString(1, username);
+            stm.setInt(2, produktid);
+            stm.execute();
+        System.out.println("ingen");
+        }else {
+            stm = con.prepareCall("call AddToCart((SELECT id from kund where förnamn = ?), 9 ,?)");
+            stm.setString(1, username);
+            stm.setInt(2, produktid);
+            stm.execute();
+        System.out.println("du har redan");
+        }
 
-    public void setupDatabaseConnection(){
+
+
+    System.out.println("Beställning lagd!");
+    purchase++;
+    rs  = stmt.executeQuery("SELECT köpnr from beställning");
+    while (rs.next()){
+        int letsgo = rs.getInt("köpnr");
+        System.out.println(letsgo);
+    }
+
+
+
+        selectAllProducts();
+
+}
+
+
+
+    public void setupDatabaseConnection() {
 
         try {
             Properties p = new Properties();
@@ -52,7 +113,7 @@ public class GUI {
 
             ResultSet rs = stmt.executeQuery("SELECT namn from produkt");
 
-            while (rs.next()){
+            while (rs.next()) {
                 String temp = rs.getString("namn");
                 System.out.println(temp);
             }
@@ -65,12 +126,10 @@ public class GUI {
     }
 
 
-
     public void LogIn() throws SQLException {
 
-        Scanner in = new Scanner(System.in);
-        String username;
-        String password;
+
+
 
 //        System.out.println("Välkommen till Shoeshop!");
 //        System.out.println("Användarnamn?");
@@ -78,7 +137,7 @@ public class GUI {
 //        System.out.println("Lösenord?");
 //        password = in.next();
 
-connectToAndQueryDatabase("danne", "danne");
+        connectToAndQueryDatabase("daniel", "daniel");
 
 
     }
