@@ -31,6 +31,8 @@ public class GUI {
     List<Produkt> produkter = imp.getProdukter();
     List<Beställning> beställningar = imp.getBeställningar();
     List<Skickar> skickar = imp.getSkickar();
+    List<Recension> recensions = imp.getRecensions();
+    List<Betyg> betygs = imp.getBetygen();
 
     Kund loggedInKund = new Kund();
 
@@ -76,6 +78,7 @@ public class GUI {
         System.out.println("Välj ett alternativ!");
         System.out.println("1. Gör en ny beställning");
         System.out.println("2. Kolla tidigare beställningar");
+        System.out.println("3. Kolla medelbetyg");
 
         alternativ = in.nextInt();
 
@@ -85,6 +88,11 @@ public class GUI {
                 break;
             case 2:
                 kollaBeställningar();
+                break;
+            case 3:
+                findAverageBetyg();
+                break;
+            case 4:
                 break;
 
         }
@@ -292,6 +300,21 @@ public class GUI {
             }
         }
 
+
+
+    }
+
+    public void findAverageBetyg(){
+        int a = 0;
+
+        System.out.println("Välj en produkt!");
+        for (Produkt pro : produkter){
+            a++;
+            System.out.println(a + ". " +pro.getNamn());
+        }
+        String answer = in.next();
+
+        Recension
 
 
     }

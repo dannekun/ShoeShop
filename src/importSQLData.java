@@ -25,6 +25,64 @@ public class importSQLData {
     List<Kategori> kategorier = new ArrayList<>();
     List<Tillhör> tillhörs = new ArrayList<>();
     List<slutILager> slutILagers = new ArrayList<>();
+    List<Recension> recensions = new ArrayList<>();
+
+
+    public List<Ort> getOrten() {
+        return orten;
+    }
+
+    public void setOrten(List<Ort> orten) {
+        this.orten = orten;
+    }
+
+    public List<Betyg> getBetygen() {
+        return betygen;
+    }
+
+    public void setBetygen(List<Betyg> betygen) {
+        this.betygen = betygen;
+    }
+
+    public List<Märke> getMärken() {
+        return märken;
+    }
+
+    public void setMärken(List<Märke> märken) {
+        this.märken = märken;
+    }
+
+    public List<Kategori> getKategorier() {
+        return kategorier;
+    }
+
+    public void setKategorier(List<Kategori> kategorier) {
+        this.kategorier = kategorier;
+    }
+
+    public List<Tillhör> getTillhörs() {
+        return tillhörs;
+    }
+
+    public void setTillhörs(List<Tillhör> tillhörs) {
+        this.tillhörs = tillhörs;
+    }
+
+    public List<slutILager> getSlutILagers() {
+        return slutILagers;
+    }
+
+    public void setSlutILagers(List<slutILager> slutILagers) {
+        this.slutILagers = slutILagers;
+    }
+
+    public List<Recension> getRecensions() {
+        return recensions;
+    }
+
+    public void setRecensions(List<Recension> recensions) {
+        this.recensions = recensions;
+    }
 
     public List<Skickar> getSkickar() {
         return skickar;
@@ -72,6 +130,7 @@ public class importSQLData {
         updateKategori();
         updateTillhör();
         updateSlutILager();
+        updateRecension();
 
     }
 
@@ -119,7 +178,6 @@ public class importSQLData {
         }
 
     }
-
 
     public void updateProdukter() throws SQLException {
 
@@ -263,7 +321,24 @@ public class importSQLData {
 
     }
 
+public void updateRecension() throws SQLException {
+    recensions.clear();
 
+    rs = stmt.executeQuery("select id, kommentar,datum,betygid,produktid,kundid from recension");
+
+    while (rs.next()) {
+        Recension temp = new Recension();
+        temp.setId(rs.getInt("id"));
+        temp.setKommentar(rs.getString("kommentar"));
+        temp.setDatum(rs.getString("datum"));
+        temp.setBetygid(rs.getInt("betygid"));
+        temp.setProduktid(rs.getInt("produktid"));
+        temp.setKundid(rs.getInt("kundid"));
+
+        recensions.add(temp);
+    }
+
+}
 
 
     public void connectToAndQueryDatabase(String username, String
