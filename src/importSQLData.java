@@ -18,6 +18,15 @@ public class importSQLData {
     List<Kund> kunder = new ArrayList<>();
     List<Produkt> produkter = new ArrayList<>();
     List<Beställning> beställningar = new ArrayList<>();
+    List<Skickar> skickar = new ArrayList<>();
+
+    public List<Skickar> getSkickar() {
+        return skickar;
+    }
+
+    public void setSkickar(List<Skickar> skickar) {
+        this.skickar = skickar;
+    }
 
     public List<Beställning> getBeställningar() {
         return beställningar;
@@ -50,6 +59,7 @@ public class importSQLData {
         updateKunder();
         updateProdukter();
         updateBeställning();
+        updateSkickar();
 
     }
 
@@ -118,6 +128,26 @@ public class importSQLData {
             temp.setLager(rs.getInt("lager"));
 
             produkter.add(temp);
+        }
+
+    }
+
+    public void updateSkickar() throws SQLException {
+
+        skickar.clear();
+
+        rs = stmt.executeQuery("select id, köpnr,produktid from skickar");
+
+
+
+        while (rs.next()) {
+            Skickar temp = new Skickar();
+            temp.setId(rs.getInt("id"));
+            temp.setKöpnr(rs.getInt("köpnr"));
+            temp.setProduktid(rs.getInt("produktid"));
+
+
+            skickar.add(temp);
         }
 
     }

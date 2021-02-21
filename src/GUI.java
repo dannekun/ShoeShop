@@ -30,6 +30,7 @@ public class GUI {
     List<Kund> kunder = imp.getKunder();
     List<Produkt> produkter = imp.getProdukter();
     List<Beställning> beställningar = imp.getBeställningar();
+    List<Skickar> skickar = imp.getSkickar();
 
     Kund loggedInKund = new Kund();
 
@@ -41,6 +42,7 @@ public class GUI {
         imp.updateData();
         kunder = imp.getKunder();
         produkter = imp.getProdukter();
+        skickar = imp.getSkickar();
 
     }
 
@@ -108,40 +110,54 @@ public class GUI {
         List<Beställning> unikaID = new ArrayList<>();
 
         for (Beställning beID : tempB){
-            if (beID.getKöpnr())
-
 
             if (!unikaID.contains(beID.getKöpnr())){
                 unikaID.add(beID);
             }
         }
 
+
+        List<Beställning> sistaListanJagLovar = new ArrayList<>();
+
+        int tempköpnr= 0;
+        int tempköpsumma = 0;
         for (int i = 0; i < unikaID.size(); i++) {
+            if (unikaID.get(i).getKöpnr() != tempköpnr){
+                tempköpnr = unikaID.get(i).getKöpnr();
+                sistaListanJagLovar.add(unikaID.get(i));
 
-        }
-
-        List<Beställning> finalTemp = new ArrayList<>();
-
-        for (int i = 0; i < unikaID.size(); i++) {
-            int p = 0;
-            for (int j = 0; j < tempB.size(); j++) {
-                if (unikaID.get(i).getKöpnr() == tempB.get(j).getKöpnr()){
-                   p = p + tempB.get(j).getSumma();
+                for (Beställning best :beställningar){
+                   if (best.getKöpnr() == unikaID.get(i).getKöpnr()){
+                       tempköpsumma = tempköpsumma + unikaID.get(i).getSumma();
+                   }
                 }
 
+                sistaListanJagLovar.get(sistaListanJagLovar.size()-1).setSumma(tempköpsumma);
+                tempköpsumma = 0;
+
             }
-            finalTemp.add(unikaID.get(i));
-            finalTemp.get(i).setSumma(p);
         }
 
+
         System.out.println("Beställningar från: " + loggedInKund.getFörnamn());
-        for (Beställning printOrder : finalTemp){
+        for (Beställning printOrder : sistaListanJagLovar){
             spaaaace();
             System.out.println("OrderID: " + printOrder.getKöpnr());
-            System.out.println("Summa: " + printOrder.getSumma());
+            for(Skickar findItems: skickar){
+               if (findItems.getKöpnr() == printOrder.getKöpnr()){
+                   for (Produkt pro : produkter){
+                       if (pro.getId() == findItems.getProduktid()){
+                           System.out.println(pro.getNamn() + " " + pro.getPris() + "kr");
+                       }
+                   }
+               }
+            }
+            System.out.println("Summa: " + printOrder.getSumma() + "kr");
             System.out.println("Datum: " + printOrder.getDatum());
             spaaaace();
         }
+
+        mainMeny();
 
     }
 
