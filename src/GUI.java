@@ -67,22 +67,36 @@ public class GUI {
 
 public void purchaseProduct(int produktid) throws SQLException {
     CallableStatement stm;
+    int i = 0;
+    int y = 0;
 
-        rs = stmt.executeQuery("SELECT  lager from produkt where id  = ?");
-        stmt.
+    rs = stmt.executeQuery("select lager from produkt");
+    
+   while(rs.next()){
+       if (i == produktid-1){
+           i++;
+          y =  rs.getInt("lager");
+       }else {
+           i++;
+            rs.getInt("lager");
+       }
+
+
+    }
+    System.out.println(y);
 
     if (purchase == 0){
             stm = con.prepareCall("call AddToCart((SELECT id from kund where förnamn = ?), (Select max(köpnr) from beställning)+10 ,?)");
             stm.setString(1, username);
             stm.setInt(2, produktid);
             stm.execute();
-        System.out.println("ingen");
+
         }else {
             stm = con.prepareCall("call AddToCart((SELECT id from kund where förnamn = ?), (Select max(köpnr) from beställning),?)");
             stm.setString(1, username);
             stm.setInt(2, produktid);
             stm.execute();
-        System.out.println("du har redan");
+
         }
 
 
@@ -92,7 +106,6 @@ public void purchaseProduct(int produktid) throws SQLException {
     rs  = stmt.executeQuery("SELECT köpnr from beställning");
     while (rs.next()){
         int letsgo = rs.getInt("köpnr");
-        System.out.println(letsgo);
     }
 
 
