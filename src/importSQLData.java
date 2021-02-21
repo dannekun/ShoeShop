@@ -19,6 +19,12 @@ public class importSQLData {
     List<Produkt> produkter = new ArrayList<>();
     List<Beställning> beställningar = new ArrayList<>();
     List<Skickar> skickar = new ArrayList<>();
+    List<Ort> orten = new ArrayList<>();
+    List<Betyg> betygen = new ArrayList<>();
+    List<Märke> märken = new ArrayList<>();
+    List<Kategori> kategorier = new ArrayList<>();
+    List<Tillhör> tillhörs = new ArrayList<>();
+    List<slutILager> slutILagers = new ArrayList<>();
 
     public List<Skickar> getSkickar() {
         return skickar;
@@ -60,6 +66,12 @@ public class importSQLData {
         updateProdukter();
         updateBeställning();
         updateSkickar();
+        updateOrt();
+        updateBetyg();
+        updateMärke();
+        updateKategori();
+        updateTillhör();
+        updateSlutILager();
 
     }
 
@@ -151,6 +163,107 @@ public class importSQLData {
         }
 
     }
+
+    public void updateOrt() throws SQLException {
+
+        orten.clear();
+
+        rs = stmt.executeQuery("select id, namn from ort");
+
+
+
+        while (rs.next()) {
+            Ort temp = new Ort();
+            temp.setId(rs.getInt("id"));
+            temp.setNamn(rs.getString("namn"));
+
+
+            orten.add(temp);
+        }
+
+    }
+
+    public void updateBetyg() throws SQLException {
+        betygen.clear();
+
+        rs = stmt.executeQuery("select id, betygnr, omdöme from betyg");
+
+        while (rs.next()) {
+            Betyg temp = new Betyg();
+            temp.setId(rs.getInt("id"));
+            temp.setBetygnr(rs.getInt("betygnr"));
+            temp.setOmdöme(rs.getString("omdöme"));
+
+            betygen.add(temp);
+        }
+
+    }
+
+    public void updateMärke() throws SQLException {
+        märken.clear();
+
+        rs = stmt.executeQuery("select id, namn from märke");
+
+        while (rs.next()) {
+            Märke temp = new Märke();
+            temp.setId(rs.getInt("id"));
+            temp.setNamn(rs.getString("namn"));
+
+            märken.add(temp);
+        }
+
+    }
+
+    public void updateKategori() throws SQLException {
+        kategorier.clear();
+
+        rs = stmt.executeQuery("select id, namn from kategori");
+
+        while (rs.next()) {
+            Kategori temp = new Kategori();
+            temp.setId(rs.getInt("id"));
+            temp.setNamn(rs.getString("namn"));
+
+            kategorier.add(temp);
+        }
+    }
+
+    public void updateTillhör() throws SQLException {
+        tillhörs.clear();
+
+        rs = stmt.executeQuery("select id, kategoriid,produktid from tillhör");
+
+        while (rs.next()) {
+            Tillhör temp = new Tillhör();
+            temp.setId(rs.getInt("id"));
+            temp.setKategoriID(rs.getInt("kategoriid"));
+            temp.setProduktID(rs.getInt("produktid"));
+
+            tillhörs.add(temp);
+        }
+
+
+    }
+
+    public void updateSlutILager() throws SQLException {
+        slutILagers.clear();
+
+        rs = stmt.executeQuery("select id, datum,produktid from slutilager");
+
+        while (rs.next()) {
+            slutILager temp = new slutILager();
+            temp.setId(rs.getInt("id"));
+            temp.setDatum(rs.getString("kategoriid"));
+            temp.setProduktid(rs.getInt("produktid"));
+
+            slutILagers.add(temp);
+        }
+
+
+
+    }
+
+
 
 
     public void connectToAndQueryDatabase(String username, String
