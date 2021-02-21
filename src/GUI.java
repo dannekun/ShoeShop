@@ -33,18 +33,22 @@ public class GUI {
     List<Skickar> skickar = imp.getSkickar();
     List<Recension> recensions = imp.getRecensions();
     List<Betyg> betygs = imp.getBetygen();
+    List<Beskriver> beskrivers = imp.getBeskrivers();
 
     Kund loggedInKund = new Kund();
 
     List<Produkt> produkterILager = new ArrayList<>();
 
-    List<Produkt> varukorg= new ArrayList<>();
+    List<Produkt> varukorg = new ArrayList<>();
 
     public void refresh() throws SQLException {
         imp.updateData();
         kunder = imp.getKunder();
         produkter = imp.getProdukter();
         skickar = imp.getSkickar();
+        recensions = imp.getRecensions();
+        betygs = imp.getBetygen();
+        beskrivers = imp.getBeskrivers();
 
     }
 
@@ -73,7 +77,7 @@ public class GUI {
         purchase = 0;
         int alternativ;
         spaaaace();
-        System.out.println("Välkommen " + loggedInKund.getFörnamn()+ "!");
+        System.out.println("Välkommen " + loggedInKund.getFörnamn() + "!");
         spaaaace();
         System.out.println("Välj ett alternativ!");
         System.out.println("1. Gör en ny beställning");
@@ -82,7 +86,7 @@ public class GUI {
 
         alternativ = in.nextInt();
 
-        switch (alternativ){
+        switch (alternativ) {
             case 1:
                 görBeställning();
                 break;
@@ -109,17 +113,17 @@ public class GUI {
 
         List<Beställning> tempB = new ArrayList<>();
 
-        for (Beställning be : beställningar){
-            if (be.getKundid() == loggedInKund.getId()){
+        for (Beställning be : beställningar) {
+            if (be.getKundid() == loggedInKund.getId()) {
                 tempB.add(be);
             }
         }
 
         List<Beställning> unikaID = new ArrayList<>();
 
-        for (Beställning beID : tempB){
+        for (Beställning beID : tempB) {
 
-            if (!unikaID.contains(beID.getKöpnr())){
+            if (!unikaID.contains(beID.getKöpnr())) {
                 unikaID.add(beID);
             }
         }
@@ -127,20 +131,20 @@ public class GUI {
 
         List<Beställning> sistaListanJagLovar = new ArrayList<>();
 
-        int tempköpnr= 0;
+        int tempköpnr = 0;
         int tempköpsumma = 0;
         for (int i = 0; i < unikaID.size(); i++) {
-            if (unikaID.get(i).getKöpnr() != tempköpnr){
+            if (unikaID.get(i).getKöpnr() != tempköpnr) {
                 tempköpnr = unikaID.get(i).getKöpnr();
                 sistaListanJagLovar.add(unikaID.get(i));
 
-                for (Beställning best :beställningar){
-                   if (best.getKöpnr() == unikaID.get(i).getKöpnr()){
-                       tempköpsumma = tempköpsumma + unikaID.get(i).getSumma();
-                   }
+                for (Beställning best : beställningar) {
+                    if (best.getKöpnr() == unikaID.get(i).getKöpnr()) {
+                        tempköpsumma = tempköpsumma + unikaID.get(i).getSumma();
+                    }
                 }
 
-                sistaListanJagLovar.get(sistaListanJagLovar.size()-1).setSumma(tempköpsumma);
+                sistaListanJagLovar.get(sistaListanJagLovar.size() - 1).setSumma(tempköpsumma);
                 tempköpsumma = 0;
 
             }
@@ -148,17 +152,17 @@ public class GUI {
 
 
         System.out.println("Beställningar från: " + loggedInKund.getFörnamn());
-        for (Beställning printOrder : sistaListanJagLovar){
+        for (Beställning printOrder : sistaListanJagLovar) {
             spaaaace();
             System.out.println("OrderID: " + printOrder.getKöpnr());
-            for(Skickar findItems: skickar){
-               if (findItems.getKöpnr() == printOrder.getKöpnr()){
-                   for (Produkt pro : produkter){
-                       if (pro.getId() == findItems.getProduktid()){
-                           System.out.println(pro.getNamn() + " " + pro.getPris() + "kr");
-                       }
-                   }
-               }
+            for (Skickar findItems : skickar) {
+                if (findItems.getKöpnr() == printOrder.getKöpnr()) {
+                    for (Produkt pro : produkter) {
+                        if (pro.getId() == findItems.getProduktid()) {
+                            System.out.println(pro.getNamn() + " " + pro.getPris() + "kr");
+                        }
+                    }
+                }
             }
             System.out.println("Summa: " + printOrder.getSumma() + "kr");
             System.out.println("Datum: " + printOrder.getDatum());
@@ -182,29 +186,28 @@ public class GUI {
 
 
         for (Kund kund : kunder) {
-            if (kund.getFörnamn().equalsIgnoreCase(username) && kund.getLösenord().equalsIgnoreCase(password)){
+            if (kund.getFörnamn().equalsIgnoreCase(username) && kund.getLösenord().equalsIgnoreCase(password)) {
                 loggedin = true;
-            loggedInKund = kund;
+                loggedInKund = kund;
             }
         }
 
-        if (loggedin){
+        if (loggedin) {
             mainMeny();
 
-        }else {
+        } else {
             System.out.println("Inloggning misslyckades! Försök igen!");
             logInUI();
         }
         selectAllProducts();
     }
 
-
     public void selectAllProducts() throws SQLException {
         int product;
 
         produkterILager.clear();
 
-        for (Produkt temp : produkter){
+        for (Produkt temp : produkter) {
             if (temp.getLager() > 0) {
                 produkterILager.add(temp);
             }
@@ -212,20 +215,20 @@ public class GUI {
 
         int counter = 0;
         System.out.println("0. Tillbaka");
-        for (Produkt tempish : produkterILager){
+        for (Produkt tempish : produkterILager) {
             counter++;
             System.out.println(counter + ". " + tempish.getNamn());
         }
-        System.out.println((produkterILager.size()+1)+ ". Varukorg" );
+        System.out.println((produkterILager.size() + 1) + ". Varukorg");
 
         product = Integer.parseInt(in.next());
 
-        if (product == 0){
+        if (product == 0) {
             mainMeny();
-        }else if (product == (produkterILager.size() + 1)){
-           varukorg();
-        }else{
-            int ship = produkterILager.get(product-1).getId();
+        } else if (product == (produkterILager.size() + 1)) {
+            varukorg();
+        } else {
+            int ship = produkterILager.get(product - 1).getId();
 
             showProductInfo(ship);
         }
@@ -236,18 +239,18 @@ public class GUI {
         Produkt currentProduct = new Produkt();
         int findProductToSell = 0;
         int foundIt = 0;
-        for (Produkt find : produkterILager){
-            if (find.getId() == id){
-                foundIt =findProductToSell;
+        for (Produkt find : produkterILager) {
+            if (find.getId() == id) {
+                foundIt = findProductToSell;
                 currentProduct = find;
             }
             findProductToSell++;
         }
 
         System.out.println(currentProduct.getNamn());
-        System.out.println("Pris: "+currentProduct.getPris()+ "kr");
-        System.out.println("Storlek: "+currentProduct.getStorlek());
-        System.out.println("Färg: "+currentProduct.getFärg());
+        System.out.println("Pris: " + currentProduct.getPris() + "kr");
+        System.out.println("Storlek: " + currentProduct.getStorlek());
+        System.out.println("Färg: " + currentProduct.getFärg());
         System.out.println("Lagerstatus: " + currentProduct.getLager() + "st");
         System.out.println("0. Tillbaka");
         System.out.println("1. Lägg till i varukorgen");
@@ -258,15 +261,15 @@ public class GUI {
 
         if (choicee == 0) {
             selectAllProducts();
-        }else if (choicee == 1){
+        } else if (choicee == 1) {
             varukorg.add(currentProduct);
             purchase++;
             System.out.println("Tillagd i varukorgen!");
-            produkterILager.get(foundIt).setLager(produkterILager.get(foundIt).getLager()-1);
-            if (produkterILager.get(foundIt).getLager() == 0){
+            produkterILager.get(foundIt).setLager(produkterILager.get(foundIt).getLager() - 1);
+            if (produkterILager.get(foundIt).getLager() == 0) {
                 produkterILager.remove(foundIt);
                 selectAllProducts();
-            }else {
+            } else {
                 showProductInfo(id);
             }
 
@@ -277,13 +280,13 @@ public class GUI {
 
     public void varukorg() throws SQLException {
         int totalVarukorg = 0;
-        if (purchase == 0){
+        if (purchase == 0) {
             System.out.println("Varukorgen är tom!");
             selectAllProducts();
-        }else {
+        } else {
             System.out.println("Produkter i varukorgen: ");
-            for (Produkt produktIKorg: varukorg){
-                System.out.println(produktIKorg.getNamn() + " " + produktIKorg.getPris()+ "kr");
+            for (Produkt produktIKorg : varukorg) {
+                System.out.println(produktIKorg.getNamn() + " " + produktIKorg.getPris() + "kr");
                 totalVarukorg = totalVarukorg + produktIKorg.getPris();
             }
             System.out.println("Totalt: " + totalVarukorg + "kr");
@@ -293,42 +296,75 @@ public class GUI {
             String next = in.next();
             int nextInt = Integer.parseInt(next);
 
-            if (nextInt == 0){
+            if (nextInt == 0) {
                 selectAllProducts();
-            }else {
+            } else {
                 purchaseProduct();
             }
         }
 
 
-
     }
 
-    public void findAverageBetyg(){
+    public void findAverageBetyg() {
         int a = 0;
 
         System.out.println("Välj en produkt!");
-        for (Produkt pro : produkter){
+        for (Produkt pro : produkter) {
             a++;
-            System.out.println(a + ". " +pro.getNamn());
+            System.out.println(a + ". " + pro.getNamn());
         }
         String answer = in.next();
 
-        Recension
+        List<Recension> recensionUnique = new ArrayList<>();
+
+        int tempCount = Integer.parseInt(answer);
+
+        for (Recension recenTemp : recensions){
+            if (recenTemp.getProduktid() == tempCount){
+                recensionUnique.add(recenTemp);
+            }
+        }
+
+        int finalanswer = 0;
+        for (Recension res : recensionUnique){
+            finalanswer = finalanswer + res.getBetygid();
+        }
+
+        finalanswer = finalanswer / recensionUnique.size();
+
+        System.out.println(produkter.get(tempCount-1).getNamn());
+        System.out.println("Medelbetyg: " + finalanswer);
+
+
+        /*
+        for (Recension temp : recensions) {
+
+           for (Betyg bet : betygs){
+               for (Beskriver besk : beskrivers){
+                   if (besk.getBetygnr() == bet.getBetygnr() && temp.getId() == besk.getRecensionid()){
+
+                   }
+               }
+
+           }
+        }
+
+         */
 
 
     }
 
 
-    public int findMaxBeställningNr(){
+    public int findMaxBeställningNr() {
         int tempNr = 0;
 
-        for (Beställning best : beställningar){
-            if (best.getKöpnr() > tempNr){
+        for (Beställning best : beställningar) {
+            if (best.getKöpnr() > tempNr) {
                 tempNr = best.getKöpnr();
             }
         }
-        return tempNr+1;
+        return tempNr + 1;
     }
 
     public void purchaseProduct() throws SQLException {
@@ -362,8 +398,8 @@ public class GUI {
             }
 
  */
-            System.out.println("Beställning lagd!");
-            purchase = 1;
+        System.out.println("Beställning lagd!");
+        purchase = 1;
 
         imp.updateData();
 
@@ -413,7 +449,6 @@ public class GUI {
         rs = stmt.executeQuery("select id, förnamn,efternamn,adress, mail,telefonnummer,ortid,lösenord from kund");
 
 
-
         while (rs.next()) {
             Kund temp = new Kund();
             temp.setId(rs.getInt("id"));
@@ -454,7 +489,8 @@ public class GUI {
 
 
     }
-    public void spaaaace(){
+
+    public void spaaaace() {
         System.out.println("\n------------------------------------------------\n");
     }
 

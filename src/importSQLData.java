@@ -26,7 +26,15 @@ public class importSQLData {
     List<Tillhör> tillhörs = new ArrayList<>();
     List<slutILager> slutILagers = new ArrayList<>();
     List<Recension> recensions = new ArrayList<>();
+    List<Beskriver> beskrivers = new ArrayList<>();
 
+    public List<Beskriver> getBeskrivers() {
+        return beskrivers;
+    }
+
+    public void setBeskrivers(List<Beskriver> beskrivers) {
+        this.beskrivers = beskrivers;
+    }
 
     public List<Ort> getOrten() {
         return orten;
@@ -131,6 +139,7 @@ public class importSQLData {
         updateTillhör();
         updateSlutILager();
         updateRecension();
+        updateBeskriver();
 
     }
 
@@ -139,7 +148,6 @@ public class importSQLData {
         kunder.clear();
 
         rs = stmt.executeQuery("select id, förnamn,efternamn,adress, mail,telefonnummer,ortid,lösenord from kund");
-
 
 
         while (rs.next()) {
@@ -165,7 +173,6 @@ public class importSQLData {
         rs = stmt.executeQuery("select id, köpnr,summa,datum, kundid from beställning");
 
 
-
         while (rs.next()) {
             Beställning temp = new Beställning();
             temp.setId(rs.getInt("id"));
@@ -184,7 +191,6 @@ public class importSQLData {
         produkter.clear();
 
         rs = stmt.executeQuery("select id, namn,pris,storlek, färg,märkeid,lager from produkt");
-
 
 
         while (rs.next()) {
@@ -209,7 +215,6 @@ public class importSQLData {
         rs = stmt.executeQuery("select id, köpnr,produktid from skickar");
 
 
-
         while (rs.next()) {
             Skickar temp = new Skickar();
             temp.setId(rs.getInt("id"));
@@ -227,7 +232,6 @@ public class importSQLData {
         orten.clear();
 
         rs = stmt.executeQuery("select id, namn from ort");
-
 
 
         while (rs.next()) {
@@ -318,27 +322,42 @@ public class importSQLData {
         }
 
 
+    }
+
+    public void updateRecension() throws SQLException {
+        recensions.clear();
+
+        rs = stmt.executeQuery("select id, kommentar,datum,betygid,produktid,kundid from recension");
+
+        while (rs.next()) {
+            Recension temp = new Recension();
+            temp.setId(rs.getInt("id"));
+            temp.setKommentar(rs.getString("kommentar"));
+            temp.setDatum(rs.getString("datum"));
+            temp.setBetygid(rs.getInt("betygid"));
+            temp.setProduktid(rs.getInt("produktid"));
+            temp.setKundid(rs.getInt("kundid"));
+
+            recensions.add(temp);
+        }
 
     }
 
-public void updateRecension() throws SQLException {
-    recensions.clear();
+    public void updateBeskriver() throws SQLException {
+        beskrivers.clear();
 
-    rs = stmt.executeQuery("select id, kommentar,datum,betygid,produktid,kundid from recension");
+        rs = stmt.executeQuery("select id, recensionid, betygnr from beskriver");
 
-    while (rs.next()) {
-        Recension temp = new Recension();
-        temp.setId(rs.getInt("id"));
-        temp.setKommentar(rs.getString("kommentar"));
-        temp.setDatum(rs.getString("datum"));
-        temp.setBetygid(rs.getInt("betygid"));
-        temp.setProduktid(rs.getInt("produktid"));
-        temp.setKundid(rs.getInt("kundid"));
+        while (rs.next()) {
+            Beskriver temp = new Beskriver();
+            temp.setId(rs.getInt("id"));
+            temp.setRecensionid(rs.getInt("recensionid"));
+            temp.setBetygnr(rs.getInt("betygnr"));
 
-        recensions.add(temp);
+            beskrivers.add(temp);
+        }
+
     }
-
-}
 
 
     public void connectToAndQueryDatabase(String username, String
