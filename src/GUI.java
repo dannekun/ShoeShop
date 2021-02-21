@@ -11,31 +11,38 @@ import java.sql.*;
  * Copyright: MIT
  */
 public class GUI {
+
+
     Connection con = null;
+
+
     public void connectToAndQueryDatabase(String username, String
             password) throws SQLException {
         Statement stmt;
 
         try {
-            con = DriverManager.getConnection("jdbc:myDriver:database_webshop?serverTimezone=UTC&useSSL=false", username, password);
+            con = DriverManager.getConnection("jdbc:mysql://localhost/database_webshop", username, password);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
         stmt = con.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT förnamn from kund");
+        ResultSet rs = stmt.executeQuery("SELECT namn from produkt");
         while (rs.next()) {
-            int x = rs.getInt("förnamn");
-            String s = rs.getString("b");
-            float f = rs.getFloat("c");
+            String x = rs.getString("namn");
+            System.out.println(x);
         }
+
+
     }
+
+
 
 
     public void setupDatabaseConnection(){
 
         try {
             Properties p = new Properties();
-            p.load(new FileInputStream("Properties.properties"));
+            p.load(new FileInputStream("src/Properties.properties"));
 
             Class.forName("com.mysql.cj.jdbc.Driver");
 
@@ -43,7 +50,12 @@ public class GUI {
 
             Statement stmt = con.createStatement();
 
-            ResultSet rs = stmt.executeQuery("SELECT förnamn from kund");
+            ResultSet rs = stmt.executeQuery("SELECT namn from produkt");
+
+            while (rs.next()){
+                String temp = rs.getString("namn");
+                System.out.println(temp);
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -54,20 +66,19 @@ public class GUI {
 
 
 
-    public void Mainmeny() throws SQLException {
+    public void LogIn() throws SQLException {
 
         Scanner in = new Scanner(System.in);
-        String temp1;
-        String temp2;
+        String username;
+        String password;
 
-        System.out.println("Välkommen till Shoeshop!");
-        System.out.println("Användarnamn?");
-        temp1 = in.next();
-        System.out.println("Lösenord?");
-        temp2 = in.next();
+//        System.out.println("Välkommen till Shoeshop!");
+//        System.out.println("Användarnamn?");
+//        username = in.next();
+//        System.out.println("Lösenord?");
+//        password = in.next();
 
-connectToAndQueryDatabase("root", "lolica123");
-
+connectToAndQueryDatabase("danne", "danne");
 
 
     }
