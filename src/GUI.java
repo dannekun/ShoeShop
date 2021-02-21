@@ -83,8 +83,10 @@ public class GUI {
         System.out.println("1. Gör en ny beställning");
         System.out.println("2. Kolla tidigare beställningar");
         System.out.println("3. Kolla medelbetyg");
+        System.out.println("4. Skriv en recension");
 
-        alternativ = in.nextInt();
+        String alt = in.nextLine();
+        alternativ = Integer.parseInt(alt);
 
         switch (alternativ) {
             case 1:
@@ -97,6 +99,7 @@ public class GUI {
                 findAverageBetyg();
                 break;
             case 4:
+                skrivRecension();
                 break;
 
         }
@@ -180,9 +183,9 @@ public class GUI {
         refresh();
 
         System.out.println("Användarnamn?");
-        username = in.next();
+        username = in.nextLine();
         System.out.println("Lösenord");
-        password = in.next();
+        password = in.nextLine();
 
 
         for (Kund kund : kunder) {
@@ -221,7 +224,8 @@ public class GUI {
         }
         System.out.println((produkterILager.size() + 1) + ". Varukorg");
 
-        product = Integer.parseInt(in.next());
+        String answerToFind = in.nextLine();
+        product = Integer.parseInt(answerToFind);
 
         if (product == 0) {
             mainMeny();
@@ -255,7 +259,7 @@ public class GUI {
         System.out.println("0. Tillbaka");
         System.out.println("1. Lägg till i varukorgen");
 
-        String choice = in.next();
+        String choice = in.nextLine();
 
         int choicee = Integer.parseInt(choice);
 
@@ -293,7 +297,7 @@ public class GUI {
             System.out.println("0. Tillbaka");
             System.out.println("1. Köp");
 
-            String next = in.next();
+            String next = in.nextLine();
             int nextInt = Integer.parseInt(next);
 
             if (nextInt == 0) {
@@ -306,55 +310,88 @@ public class GUI {
 
     }
 
-    public void findAverageBetyg() {
+    public void findAverageBetyg() throws SQLException {
         int a = 0;
 
         System.out.println("Välj en produkt!");
+        System.out.println("0. Tillbaka");
         for (Produkt pro : produkter) {
             a++;
             System.out.println(a + ". " + pro.getNamn());
         }
-        String answer = in.next();
-
-        List<Recension> recensionUnique = new ArrayList<>();
-
+        String answer = in.nextLine();
         int tempCount = Integer.parseInt(answer);
 
-        for (Recension recenTemp : recensions){
-            if (recenTemp.getProduktid() == tempCount){
-                recensionUnique.add(recenTemp);
+        if (tempCount == 0){
+            mainMeny();
+        }else {
+            List<Recension> recensionUnique = new ArrayList<>();
+
+
+
+            for (Recension recenTemp : recensions){
+                if (recenTemp.getProduktid() == tempCount){
+                    recensionUnique.add(recenTemp);
+                }
             }
+
+            int finalanswer = 0;
+            for (Recension res : recensionUnique){
+                finalanswer = finalanswer + res.getBetygid();
+            }
+
+            finalanswer = finalanswer / recensionUnique.size();
+
+            System.out.println(produkter.get(tempCount-1).getNamn());
+            System.out.println("Medelbetyg: " + finalanswer);
+
+            findAverageBetyg();
         }
 
-        int finalanswer = 0;
-        for (Recension res : recensionUnique){
-            finalanswer = finalanswer + res.getBetygid();
-        }
-
-        finalanswer = finalanswer / recensionUnique.size();
-
-        System.out.println(produkter.get(tempCount-1).getNamn());
-        System.out.println("Medelbetyg: " + finalanswer);
-
-
-        /*
-        for (Recension temp : recensions) {
-
-           for (Betyg bet : betygs){
-               for (Beskriver besk : beskrivers){
-                   if (besk.getBetygnr() == bet.getBetygnr() && temp.getId() == besk.getRecensionid()){
-
-                   }
-               }
-
-           }
-        }
-
-         */
 
 
     }
 
+    public void skrivRecension() throws SQLException {
+        int countItems = 0;
+        System.out.println("Välj en produkt att recensera");
+        System.out.println("0. Tillbaka");
+
+        for (Produkt alla : produkter){
+            countItems++;
+            System.out.println(countItems+ ". " +alla.getNamn());
+        }
+        String answer = in.nextLine();
+        int answerDigit = Integer.parseInt(answer);
+
+        System.out.println("Välj ett betyg för: " + produkter.get(answerDigit-1).getNamn());
+        System.out.println("1. " + betygs.get(1).getOmdöme());
+        System.out.println("2. " + betygs.get(2).getOmdöme());
+        System.out.println("3. " + betygs.get(3).getOmdöme());
+        System.out.println("4. " + betygs.get(4).getOmdöme());
+
+        String betygRec = in.nextLine();
+        int betygRate = Integer.parseInt(betygRec);
+
+        System.out.println("Skriv en kommentar");
+
+        String kommentarRate = in.nextLine();
+
+        CallableStatement stm = con.prepareCall("Call rate(?,?,?,?)");
+        stm.setInt(1, betygRate);
+        stm.setString(2, kommentarRate);
+        stm.setInt(3, loggedInKund.getId());
+        stm.setInt(4, answerDigit);
+        stm.execute();
+
+        System.out.println("Det gick igenom!");
+
+        skrivRecension();
+        //RECENSION
+        //BETYG
+        //BESKRIVER
+
+    }
 
     public int findMaxBeställningNr() {
         int tempNr = 0;
