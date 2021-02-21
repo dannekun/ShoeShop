@@ -6,6 +6,6 @@ public class Main {
 
         GUI gui = new GUI();
 
-        gui.LogIn();
+        gui.startServer();
     }
 }

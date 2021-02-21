@@ -1,4 +1,3 @@
-import javax.management.Query;
 import java.io.FileInputStream;
 import java.util.Properties;
 import java.util.Scanner;
@@ -29,6 +28,11 @@ public class GUI {
 
     String username = "daniel";
     String password;
+
+    public void startServer() throws SQLException {
+        connectToAndQueryDatabase("daniel", "daniel");
+    }
+
     public void connectToAndQueryDatabase(String username, String
             password) throws SQLException {
 
@@ -40,10 +44,18 @@ public class GUI {
         }
         stmt = con.createStatement();
 
+        logInUI();
+
 
         selectAllProducts();
 
     }
+
+    public void logInUI() {
+
+
+    }
+
 
     public void selectAllProducts() throws SQLException {
         int y = 0;
@@ -53,7 +65,7 @@ public class GUI {
         while (rs.next()) {
             y++;
             String x = rs.getString("namn");
-            System.out.println(y+". " +x);
+            System.out.println(y + ". " + x);
         }
 
         product = Integer.parseInt(in.next());
@@ -63,58 +75,61 @@ public class GUI {
 
     }
 
+    public void purchaseProduct(int produktid) throws SQLException {
+        CallableStatement stm;
+
+        int y = fullCounter(produktid);
+
+        if (y > 0) {
+            if (purchase == 0) {
+                stm = con.prepareCall("call AddToCart((SELECT id from kund where förnamn = ?), (Select max(köpnr) from beställning)+10 ,?)");
+                stm.setString(1, username);
+                stm.setInt(2, produktid);
+                stm.execute();
+
+            } else {
+                stm = con.prepareCall("call AddToCart((SELECT id from kund where förnamn = ?), (Select max(köpnr) from beställning),?)");
+                stm.setString(1, username);
+                stm.setInt(2, produktid);
+                stm.execute();
+
+            }
+            System.out.println("Beställning lagd!");
+            purchase++;
 
 
-public void purchaseProduct(int produktid) throws SQLException {
-    CallableStatement stm;
-    int i = 0;
-    int y = 0;
-
-    rs = stmt.executeQuery("select lager from produkt");
-    
-   while(rs.next()){
-       if (i == produktid-1){
-           i++;
-          y =  rs.getInt("lager");
-       }else {
-           i++;
-            rs.getInt("lager");
-       }
-
-
-    }
-    System.out.println(y);
-
-    if (purchase == 0){
-            stm = con.prepareCall("call AddToCart((SELECT id from kund where förnamn = ?), (Select max(köpnr) from beställning)+10 ,?)");
-            stm.setString(1, username);
-            stm.setInt(2, produktid);
-            stm.execute();
-
-        }else {
-            stm = con.prepareCall("call AddToCart((SELECT id from kund where förnamn = ?), (Select max(köpnr) from beställning),?)");
-            stm.setString(1, username);
-            stm.setInt(2, produktid);
-            stm.execute();
-
+        } else {
+            System.out.println("Slut på lager!");
         }
 
 
-
-    System.out.println("Beställning lagd!");
-    purchase++;
-    rs  = stmt.executeQuery("SELECT köpnr from beställning");
-    while (rs.next()){
-        int letsgo = rs.getInt("köpnr");
-    }
-
-
-
+        rs = stmt.executeQuery("SELECT köpnr from beställning");
+        while (rs.next()) {
+            int letsgo = rs.getInt("köpnr");
+        }
         selectAllProducts();
 
-}
+    }
 
+    public int fullCounter(int produktid) throws SQLException {
 
+        int i = 0;
+        int y = 0;
+
+        rs = stmt.executeQuery("select lager from produkt");
+
+        while (rs.next()) {
+            if (i == produktid - 1) {
+                i++;
+                y = rs.getInt("lager");
+            } else {
+                i++;
+                rs.getInt("lager");
+            }
+        }
+
+        return y;
+    }
 
     public void setupDatabaseConnection() {
 
@@ -138,23 +153,6 @@ public void purchaseProduct(int produktid) throws SQLException {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
-    }
-
-
-    public void LogIn() throws SQLException {
-
-
-
-
-//        System.out.println("Välkommen till Shoeshop!");
-//        System.out.println("Användarnamn?");
-//        username = in.next();
-//        System.out.println("Lösenord?");
-//        password = in.next();
-
-        connectToAndQueryDatabase("daniel", "daniel");
 
 
     }
