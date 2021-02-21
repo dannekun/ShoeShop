@@ -17,6 +17,15 @@ public class importSQLData {
 
     List<Kund> kunder = new ArrayList<>();
     List<Produkt> produkter = new ArrayList<>();
+    List<Beställning> beställningar = new ArrayList<>();
+
+    public List<Beställning> getBeställningar() {
+        return beställningar;
+    }
+
+    public void setBeställningar(List<Beställning> beställningar) {
+        this.beställningar = beställningar;
+    }
 
     public List<Kund> getKunder() {
         return kunder;
@@ -40,10 +49,13 @@ public class importSQLData {
 
         updateKunder();
         updateProdukter();
+        updateBeställning();
 
     }
 
     public void updateKunder() throws SQLException {
+
+        kunder.clear();
 
         rs = stmt.executeQuery("select id, förnamn,efternamn,adress, mail,telefonnummer,ortid,lösenord from kund");
 
@@ -65,8 +77,31 @@ public class importSQLData {
 
     }
 
+    public void updateBeställning() throws SQLException {
+
+        beställningar.clear();
+
+        rs = stmt.executeQuery("select id, köpnr,summa,datum, kundid from beställning");
+
+
+
+        while (rs.next()) {
+            Beställning temp = new Beställning();
+            temp.setId(rs.getInt("id"));
+            temp.setKöpnr(rs.getInt("köpnr"));
+            temp.setSumma(rs.getInt("summa"));
+            temp.setDatum(rs.getString("datum"));
+            temp.setKundid(rs.getInt("kundid"));
+
+            beställningar.add(temp);
+        }
+
+    }
+
 
     public void updateProdukter() throws SQLException {
+
+        produkter.clear();
 
         rs = stmt.executeQuery("select id, namn,pris,storlek, färg,märkeid,lager from produkt");
 

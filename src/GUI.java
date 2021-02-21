@@ -29,10 +29,13 @@ public class GUI {
 
     List<Kund> kunder = imp.getKunder();
     List<Produkt> produkter = imp.getProdukter();
+    List<Beställning> beställningar = imp.getBeställningar();
 
     Kund loggedInKund = new Kund();
 
     List<Produkt> produkterILager = new ArrayList<>();
+
+    List<Produkt> varukorg= new ArrayList<>();
 
     public void refresh() throws SQLException {
         imp.updateData();
@@ -90,9 +93,58 @@ public class GUI {
         selectAllProducts();
     }
 
-    public void kollaBeställningar(){
+    public void kollaBeställningar() throws SQLException {
+
+        refresh();
+
+        List<Beställning> tempB = new ArrayList<>();
+
+        for (Beställning be : beställningar){
+            if (be.getKundid() == loggedInKund.getId()){
+                tempB.add(be);
+            }
+        }
+
+        List<Beställning> unikaID = new ArrayList<>();
+
+        for (Beställning beID : tempB){
+            if (beID.getKöpnr())
+
+
+            if (!unikaID.contains(beID.getKöpnr())){
+                unikaID.add(beID);
+            }
+        }
+
+        for (int i = 0; i < unikaID.size(); i++) {
+
+        }
+
+        List<Beställning> finalTemp = new ArrayList<>();
+
+        for (int i = 0; i < unikaID.size(); i++) {
+            int p = 0;
+            for (int j = 0; j < tempB.size(); j++) {
+                if (unikaID.get(i).getKöpnr() == tempB.get(j).getKöpnr()){
+                   p = p + tempB.get(j).getSumma();
+                }
+
+            }
+            finalTemp.add(unikaID.get(i));
+            finalTemp.get(i).setSumma(p);
+        }
+
+        System.out.println("Beställningar från: " + loggedInKund.getFörnamn());
+        for (Beställning printOrder : finalTemp){
+            spaaaace();
+            System.out.println("OrderID: " + printOrder.getKöpnr());
+            System.out.println("Summa: " + printOrder.getSumma());
+            System.out.println("Datum: " + printOrder.getDatum());
+            spaaaace();
+        }
 
     }
+
 
     public void logInUI() throws SQLException {
         boolean loggedin = false;
@@ -140,12 +192,15 @@ public class GUI {
             counter++;
             System.out.println(counter + ". " + tempish.getNamn());
         }
+        System.out.println((produkterILager.size()+1)+ ". Varukorg" );
 
         product = Integer.parseInt(in.next());
 
         if (product == 0){
             mainMeny();
-        }else {
+        }else if (product == (produkterILager.size() + 1)){
+           varukorg();
+        }else{
             int ship = produkterILager.get(product-1).getId();
 
             showProductInfo(ship);
@@ -155,11 +210,14 @@ public class GUI {
 
     public void showProductInfo(int id) throws SQLException {
         Produkt currentProduct = new Produkt();
-
+        int findProductToSell = 0;
+        int foundIt = 0;
         for (Produkt find : produkterILager){
             if (find.getId() == id){
+                foundIt =findProductToSell;
                 currentProduct = find;
             }
+            findProductToSell++;
         }
 
         System.out.println(currentProduct.getNamn());
@@ -168,7 +226,7 @@ public class GUI {
         System.out.println("Färg: "+currentProduct.getFärg());
         System.out.println("Lagerstatus: " + currentProduct.getLager() + "st");
         System.out.println("0. Tillbaka");
-        System.out.println("1. Köp");
+        System.out.println("1. Lägg till i varukorgen");
 
         String choice = in.next();
 
@@ -177,16 +235,79 @@ public class GUI {
         if (choicee == 0) {
             selectAllProducts();
         }else if (choicee == 1){
-            purchaseProduct(currentProduct.getId());
+            varukorg.add(currentProduct);
+            purchase++;
+            System.out.println("Tillagd i varukorgen!");
+            produkterILager.get(foundIt).setLager(produkterILager.get(foundIt).getLager()-1);
+            if (produkterILager.get(foundIt).getLager() == 0){
+                produkterILager.remove(foundIt);
+                selectAllProducts();
+            }else {
+                showProductInfo(id);
+            }
+
+
         }
 
     }
 
-    public void purchaseProduct(int produktid) throws SQLException {
+    public void varukorg() throws SQLException {
+        int totalVarukorg = 0;
+        if (purchase == 0){
+            System.out.println("Varukorgen är tom!");
+            selectAllProducts();
+        }else {
+            System.out.println("Produkter i varukorgen: ");
+            for (Produkt produktIKorg: varukorg){
+                System.out.println(produktIKorg.getNamn() + " " + produktIKorg.getPris()+ "kr");
+                totalVarukorg = totalVarukorg + produktIKorg.getPris();
+            }
+            System.out.println("Totalt: " + totalVarukorg + "kr");
+            System.out.println("0. Tillbaka");
+            System.out.println("1. Köp");
+
+            String next = in.next();
+            int nextInt = Integer.parseInt(next);
+
+            if (nextInt == 0){
+                selectAllProducts();
+            }else {
+                purchaseProduct();
+            }
+        }
+
+
+
+    }
+
+
+    public int findMaxBeställningNr(){
+        int tempNr = 0;
+
+        for (Beställning best : beställningar){
+            if (best.getKöpnr() > tempNr){
+                tempNr = best.getKöpnr();
+            }
+        }
+        return tempNr+1;
+    }
+
+    public void purchaseProduct() throws SQLException {
         CallableStatement stm;
 
+        int maxNumber = findMaxBeställningNr();
+
+        for (int i = 0; i < varukorg.size(); i++) {
+            stm = con.prepareCall("call AddToCart((SELECT id from kund where förnamn = ?), ? ,?)");
+            stm.setString(1, loggedInKund.getFörnamn());
+            stm.setInt(2, maxNumber);
+            stm.setInt(3, varukorg.get(i).getId());
+            stm.execute();
+        }
 
 
+
+/*
             if (purchase == 0) {
                 stm = con.prepareCall("call AddToCart((SELECT id from kund where förnamn = ?), (Select max(köpnr) from beställning)+10 ,?)");
                 stm.setString(1, loggedInKund.getFörnamn());
@@ -200,10 +321,14 @@ public class GUI {
                 stm.execute();
 
             }
+
+ */
             System.out.println("Beställning lagd!");
             purchase = 1;
 
         imp.updateData();
+
+        /*
 
         System.out.println("0. Tillbaka");
         System.out.println("1. Köp igen");
@@ -218,6 +343,8 @@ public class GUI {
             purchaseProduct(produktid);
         }
 
+
+         */
 
 
     }
