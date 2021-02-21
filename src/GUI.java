@@ -67,14 +67,18 @@ public class GUI {
 
 public void purchaseProduct(int produktid) throws SQLException {
     CallableStatement stm;
+
+        rs = stmt.executeQuery("SELECT  lager from produkt where id  = ?");
+        stmt.
+
     if (purchase == 0){
-            stm = con.prepareCall("call AddToCart((SELECT id from kund where förnamn = ?), 9 ,?)");
+            stm = con.prepareCall("call AddToCart((SELECT id from kund where förnamn = ?), (Select max(köpnr) from beställning)+10 ,?)");
             stm.setString(1, username);
             stm.setInt(2, produktid);
             stm.execute();
         System.out.println("ingen");
         }else {
-            stm = con.prepareCall("call AddToCart((SELECT id from kund where förnamn = ?), 9 ,?)");
+            stm = con.prepareCall("call AddToCart((SELECT id from kund where förnamn = ?), (Select max(köpnr) from beställning),?)");
             stm.setString(1, username);
             stm.setInt(2, produktid);
             stm.execute();
