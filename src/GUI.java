@@ -13,11 +13,8 @@ import java.sql.*;
 public class GUI {
     importSQLData imp = new importSQLData();
 
-
     Connection con = null;
     Statement stmt;
-
-
 
     int purchase = 0;
 
