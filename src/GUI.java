@@ -92,7 +92,9 @@ public class GUI {
 
         switch (alternativ) {
             case 0:
+                spaaaace();
                 logInUI();
+
                 break;
             case 1:
                 selectAllProducts();
@@ -159,6 +161,7 @@ public class GUI {
 
         spaaaace();
         System.out.println("Beställningar från: " + loggedInKund.getFörnamn());
+        spaaaace();
         for (Beställning printOrder : sistaListanJagLovar) {
             System.out.println("OrderID: " + printOrder.getKöpnr());
             for (Skickar findItems : skickar) {
@@ -184,12 +187,12 @@ public class GUI {
 
         refresh();
 
-        spaaaace();
+
         System.out.println("Användarnamn?");
         username = in.nextLine();
         System.out.println("Lösenord");
         password = in.nextLine();
-        spaaaace();
+
 
         for (Kund kund : kunder) {
             if (kund.getFörnamn().equalsIgnoreCase(username) && kund.getLösenord().equalsIgnoreCase(password)) {
@@ -202,7 +205,9 @@ public class GUI {
             mainMeny();
 
         } else {
+            spaaaace();
             System.out.println("Inloggning misslyckades! Försök igen!");
+            spaaaace();
             logInUI();
         }
         selectAllProducts();
