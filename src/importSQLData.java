@@ -315,7 +315,7 @@ public class importSQLData {
         while (rs.next()) {
             slutILager temp = new slutILager();
             temp.setId(rs.getInt("id"));
-            temp.setDatum(rs.getString("kategoriid"));
+            temp.setDatum(rs.getString("datum"));
             temp.setProduktid(rs.getInt("produktid"));
 
             slutILagers.add(temp);

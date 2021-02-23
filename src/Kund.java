@@ -7,11 +7,6 @@
  */
 public class Kund {
 
-    Kund(){
-
-    }
-
-
     private int id;
     private String förnamn;
     private  String efternamn;
@@ -21,16 +16,6 @@ public class Kund {
     private int ortID;
     private String lösenord;
 
-    public Kund(int id, String förnamn, String efternamn, String address, String mail, int telefonnummer, int ortID, String lösenord) {
-        this.id = id;
-        this.förnamn = förnamn;
-        this.efternamn = efternamn;
-        this.address = address;
-        this.mail = mail;
-        this.telefonnummer = telefonnummer;
-        this.ortID = ortID;
-        this.lösenord = lösenord;
-    }
 
     public int getId() {
         return id;

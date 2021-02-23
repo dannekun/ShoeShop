@@ -17,7 +17,7 @@ public class GUI {
     Connection con = null;
     Statement stmt;
 
-    Scanner in = new Scanner(System.in);
+
 
     int purchase = 0;
 
@@ -73,8 +73,9 @@ public class GUI {
 
 
     public void mainMeny() throws SQLException {
+        Scanner in = new Scanner(System.in);
         purchase = 0;
-        int alternativ;
+        int alternativ = 0;
         spaaaace();
         System.out.println("Välkommen " + loggedInKund.getFörnamn() + "!");
         spaaaace();
@@ -88,30 +89,32 @@ public class GUI {
         spaaaace();
 
         String alt = in.nextLine();
-        alternativ = Integer.parseInt(alt);
+        try {
+            alternativ = Integer.parseInt(alt);
+        }catch (Exception e){
+            spaaaace();
+            System.out.println("Ett fel uppstod!");
+            spaaaace();
+            mainMeny();
+        }
+        
 
         switch (alternativ) {
-            case 0:
+            case 0 -> {
                 spaaaace();
                 logInUI();
-
-                break;
-            case 1:
-                selectAllProducts();
-                break;
-            case 2:
-                kollaBeställningar();
-                break;
-            case 3:
-                findAverageBetyg();
-                break;
-            case 4:
-                skrivRecension();
-                break;
-            case 5:
-                closeProgram();
-                break;
-
+            }
+            case 1 -> selectAllProducts();
+            case 2 -> kollaBeställningar();
+            case 3 -> findAverageBetyg();
+            case 4 -> skrivRecension();
+            case 5 -> closeProgram();
+            default -> {
+                spaaaace();
+                System.out.println("Ett fel uppstod!");
+                spaaaace();
+                mainMeny();
+            }
         }
 
     }
@@ -142,14 +145,14 @@ public class GUI {
 
         int tempköpnr = 0;
         int tempköpsumma = 0;
-        for (int i = 0; i < unikaID.size(); i++) {
-            if (unikaID.get(i).getKöpnr() != tempköpnr) {
-                tempköpnr = unikaID.get(i).getKöpnr();
-                sistaListanJagLovar.add(unikaID.get(i));
+        for (Beställning beställning : unikaID) {
+            if (beställning.getKöpnr() != tempköpnr) {
+                tempköpnr = beställning.getKöpnr();
+                sistaListanJagLovar.add(beställning);
 
                 for (Beställning best : beställningar) {
-                    if (best.getKöpnr() == unikaID.get(i).getKöpnr()) {
-                        tempköpsumma = tempköpsumma + unikaID.get(i).getSumma();
+                    if (best.getKöpnr() == beställning.getKöpnr()) {
+                        tempköpsumma = tempköpsumma + beställning.getSumma();
                     }
                 }
 
@@ -183,14 +186,16 @@ public class GUI {
     }
 
     public void logInUI() throws SQLException {
+
+        Scanner in = new Scanner(System.in);
         boolean loggedin = false;
 
         refresh();
 
 
-        System.out.println("Användarnamn?");
+        System.out.print("Användarnamn: ");
         username = in.nextLine();
-        System.out.println("Lösenord");
+        System.out.print("Lösenord: ");
         password = in.nextLine();
 
 
@@ -214,7 +219,8 @@ public class GUI {
     }
 
     public void selectAllProducts() throws SQLException {
-        int product;
+        Scanner in = new Scanner(System.in);
+        int product = 0;
 
         produkterILager.clear();
 
@@ -235,21 +241,36 @@ public class GUI {
         spaaaace();
 
         String answerToFind = in.nextLine();
-        product = Integer.parseInt(answerToFind);
+        
+        try{
+            product = Integer.parseInt(answerToFind);
+        }catch (Exception e){
+            spaaaace();
+            System.out.println("Ett fel uppstod!");
+            spaaaace();
+            selectAllProducts();
+        }
+        
 
         if (product == 0) {
             mainMeny();
-        } else if (product == (produkterILager.size() + 1)) {
+        } else if (product == (produkterILager.size() + 1) && product > 0) {
             varukorg();
-        } else {
+        } else if (product  < produkterILager.size() && product > 0){
             int ship = produkterILager.get(product - 1).getId();
 
             showProductInfo(ship);
+        }else {
+            spaaaace();
+            System.out.println("Ett fel uppstod!");
+            spaaaace();
+            selectAllProducts();
         }
 
     }
 
     public void showProductInfo(int id) throws SQLException {
+        Scanner in = new Scanner(System.in);
         Produkt currentProduct = new Produkt();
         int findProductToSell = 0;
         int foundIt = 0;
@@ -272,8 +293,17 @@ public class GUI {
         spaaaace();
 
         String choice = in.nextLine();
+        int choicee = 0;
+        try{
+            choicee = Integer.parseInt(choice);
+        }catch (Exception e){
+            spaaaace();
+            System.out.println("Ett fel uppstod!");
+            spaaaace();
+            showProductInfo(id);
+        }
 
-        int choicee = Integer.parseInt(choice);
+         
 
         if (choicee == 0) {
             selectAllProducts();
@@ -297,6 +327,7 @@ public class GUI {
     }
 
     public void varukorg() throws SQLException {
+        Scanner in = new Scanner(System.in);
         int totalVarukorg = 0;
         if (purchase == 0) {
             spaaaace();
@@ -316,7 +347,16 @@ public class GUI {
             spaaaace();
 
             String next = in.nextLine();
-            int nextInt = Integer.parseInt(next);
+            int nextInt = 0; 
+            try{
+                nextInt = Integer.parseInt(next);
+            }catch (Exception e){
+                spaaaace();
+                System.out.println("Ett fel uppstod!");
+                spaaaace();
+                varukorg();
+            }
+            
 
             if (nextInt == 0) {
                 selectAllProducts();
@@ -329,6 +369,7 @@ public class GUI {
     }
 
     public void findAverageBetyg() throws SQLException {
+        Scanner in = new Scanner(System.in);
         int a = 0;
 
         spaaaace();
@@ -340,11 +381,20 @@ public class GUI {
         }
         spaaaace();
         String answer = in.nextLine();
-        int tempCount = Integer.parseInt(answer);
-
+        
+        int tempCount = 0;
+        try {
+           tempCount = Integer.parseInt(answer);
+        }catch (Exception e){
+            spaaaace();
+            System.out.println("Ett fel uppstod!");
+            spaaaace();
+            findAverageBetyg();
+        }
+        
         if (tempCount == 0){
             mainMeny();
-        }else {
+        }else if (tempCount -1 < produkter.size() && tempCount > 0){
             List<Recension> recensionUnique = new ArrayList<>();
             List<Recension> recensionWithNoBetyg = new ArrayList<>();
 
@@ -356,16 +406,19 @@ public class GUI {
                 }
             }
 
+            List<String> kommentarer = new ArrayList<>();
+
             int finalanswer = 0;
             for (Recension res : recensionUnique){
                 if (res.getBetygid() == 0){
                     recensionWithNoBetyg.add(res);
                 }else {
+                    kommentarer.add(res.getKommentar());
                     finalanswer = finalanswer + res.getBetygid();
                 }
             }
 
-            finalanswer = finalanswer / recensionUnique.size();
+
 
             if (finalanswer == 0){
                 spaaaace();
@@ -373,14 +426,29 @@ public class GUI {
                 spaaaace();
                 findAverageBetyg();
             }else {
+                finalanswer = finalanswer / (recensionUnique.size()-recensionWithNoBetyg.size());
+
                 spaaaace();
                 System.out.println(produkter.get(tempCount-1).getNamn());
                 System.out.println("Medelbetyg: " + finalanswer);
+                System.out.println();
+                System.out.println("Kommentarer: ");
+                for (String comments : kommentarer){
+                    comments.trim();
+                    if (!comments.equals("")){
+                        System.out.println("\"" + comments + "\"");
+                    }
+                }
                 spaaaace();
                 findAverageBetyg();
             }
 
 
+        }else {
+            spaaaace();
+            System.out.println("Ett fel uppstod!");
+            spaaaace();
+            findAverageBetyg();
         }
 
 
@@ -388,6 +456,7 @@ public class GUI {
     }
 
     public void skrivRecension() throws SQLException {
+        Scanner in = new Scanner(System.in);
         int countItems = 0;
         spaaaace();
         System.out.println("Välj en produkt att recensera");
@@ -399,13 +468,22 @@ public class GUI {
         }
         spaaaace();
         String answer = in.nextLine();
-        int answerDigit = Integer.parseInt(answer);
+        int answerDigit = 0;
+        try{
+            answerDigit = Integer.parseInt(answer);
+        }catch (Exception e){
+            spaaaace();
+            System.out.println("Ett fel uppstod!");
+            spaaaace();
+            skrivRecension();
+        }
+         
 
 
 
         if (answerDigit == 0) {
             mainMeny();
-        }else {
+        }else if (answerDigit -1 < produkter.size() && answerDigit > 0){
             spaaaace();
             System.out.println("Välj ett betyg för: " + produkter.get(answerDigit-1).getNamn());
             System.out.println("1. " + betygs.get(1).getOmdöme());
@@ -413,9 +491,17 @@ public class GUI {
             System.out.println("3. " + betygs.get(3).getOmdöme());
             System.out.println("4. " + betygs.get(4).getOmdöme());
             spaaaace();
-
+            int betygRate = 0;
             String betygRec = in.nextLine();
-            int betygRate = Integer.parseInt(betygRec);
+            try {
+                betygRate = Integer.parseInt(betygRec);
+            }catch (Exception e){
+                spaaaace();
+                System.out.println("Ett fel uppstod!");
+                spaaaace();
+                skrivRecension();
+            }
+
 
 
             spaaaace();
@@ -433,10 +519,20 @@ public class GUI {
 
             spaaaace();
             System.out.println("Det gick igenom!");
+
+            refresh();
+
             spaaaace();
+
+
 
             skrivRecension();
 
+        }else {
+            spaaaace();
+            System.out.println("Ett fel uppstod!");
+            spaaaace();
+            skrivRecension();
         }
 
 
@@ -490,7 +586,7 @@ public class GUI {
     }
 
     public void closeProgram() throws SQLException {
-        System.out.println("Hej då!");
+        System.out.println("Välkommen åter!");
         imp.closeBackend();
         con.close();
         stmt.close();
