@@ -92,7 +92,7 @@ public class GUI {
 
         switch (alternativ) {
             case 0:
-                connectToAndQueryDatabase("daniel", "daniel");
+                logInUI();
                 break;
             case 1:
                 selectAllProducts();
@@ -184,11 +184,12 @@ public class GUI {
 
         refresh();
 
+        spaaaace();
         System.out.println("Användarnamn?");
         username = in.nextLine();
         System.out.println("Lösenord");
         password = in.nextLine();
-
+        spaaaace();
 
         for (Kund kund : kunder) {
             if (kund.getFörnamn().equalsIgnoreCase(username) && kund.getLösenord().equalsIgnoreCase(password)) {
