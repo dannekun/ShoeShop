@@ -359,6 +359,12 @@ public class importSQLData {
 
     }
 
+    public void closeBackend() throws SQLException {
+        rs.close();
+        stmt.close();
+        con.close();
+    }
+
 
     public void connectToAndQueryDatabase(String username, String
             password) throws SQLException {

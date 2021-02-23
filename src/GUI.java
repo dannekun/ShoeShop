@@ -1,7 +1,5 @@
-import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.Scanner;
 import java.sql.*;
 
@@ -17,7 +15,6 @@ public class GUI {
 
 
     Connection con = null;
-    ResultSet rs;
     Statement stmt;
 
     Scanner in = new Scanner(System.in);
@@ -67,7 +64,9 @@ public class GUI {
             throwables.printStackTrace();
         }
         stmt = con.createStatement();
+        spaaaace();
         System.out.println("Välkommen till ShoeShop!");
+        spaaaace();
         logInUI();
 
     }
@@ -80,17 +79,23 @@ public class GUI {
         System.out.println("Välkommen " + loggedInKund.getFörnamn() + "!");
         spaaaace();
         System.out.println("Välj ett alternativ!");
+        System.out.println("0. Byt användare");
         System.out.println("1. Gör en ny beställning");
         System.out.println("2. Kolla tidigare beställningar");
         System.out.println("3. Kolla medelbetyg");
         System.out.println("4. Skriv en recension");
+        System.out.println("5. Stäng av");
+        spaaaace();
 
         String alt = in.nextLine();
         alternativ = Integer.parseInt(alt);
 
         switch (alternativ) {
+            case 0:
+                connectToAndQueryDatabase("daniel", "daniel");
+                break;
             case 1:
-                görBeställning();
+                selectAllProducts();
                 break;
             case 2:
                 kollaBeställningar();
@@ -101,13 +106,12 @@ public class GUI {
             case 4:
                 skrivRecension();
                 break;
+            case 5:
+                closeProgram();
+                break;
 
         }
 
-    }
-
-    public void görBeställning() throws SQLException {
-        selectAllProducts();
     }
 
     public void kollaBeställningar() throws SQLException {
@@ -153,10 +157,9 @@ public class GUI {
             }
         }
 
-
+        spaaaace();
         System.out.println("Beställningar från: " + loggedInKund.getFörnamn());
         for (Beställning printOrder : sistaListanJagLovar) {
-            spaaaace();
             System.out.println("OrderID: " + printOrder.getKöpnr());
             for (Skickar findItems : skickar) {
                 if (findItems.getKöpnr() == printOrder.getKöpnr()) {
@@ -167,7 +170,7 @@ public class GUI {
                     }
                 }
             }
-            System.out.println("Summa: " + printOrder.getSumma() + "kr");
+            System.out.println("Totalsumma: " + printOrder.getSumma() + "kr");
             System.out.println("Datum: " + printOrder.getDatum());
             spaaaace();
         }
@@ -175,7 +178,6 @@ public class GUI {
         mainMeny();
 
     }
-
 
     public void logInUI() throws SQLException {
         boolean loggedin = false;
@@ -217,12 +219,14 @@ public class GUI {
         }
 
         int counter = 0;
+        spaaaace();
         System.out.println("0. Tillbaka");
         for (Produkt tempish : produkterILager) {
             counter++;
             System.out.println(counter + ". " + tempish.getNamn());
         }
         System.out.println((produkterILager.size() + 1) + ". Varukorg");
+        spaaaace();
 
         String answerToFind = in.nextLine();
         product = Integer.parseInt(answerToFind);
@@ -250,6 +254,7 @@ public class GUI {
             }
             findProductToSell++;
         }
+        spaaaace();
 
         System.out.println(currentProduct.getNamn());
         System.out.println("Pris: " + currentProduct.getPris() + "kr");
@@ -258,6 +263,7 @@ public class GUI {
         System.out.println("Lagerstatus: " + currentProduct.getLager() + "st");
         System.out.println("0. Tillbaka");
         System.out.println("1. Lägg till i varukorgen");
+        spaaaace();
 
         String choice = in.nextLine();
 
@@ -268,7 +274,9 @@ public class GUI {
         } else if (choicee == 1) {
             varukorg.add(currentProduct);
             purchase++;
+            spaaaace();
             System.out.println("Tillagd i varukorgen!");
+            spaaaace();
             produkterILager.get(foundIt).setLager(produkterILager.get(foundIt).getLager() - 1);
             if (produkterILager.get(foundIt).getLager() == 0) {
                 produkterILager.remove(foundIt);
@@ -285,9 +293,12 @@ public class GUI {
     public void varukorg() throws SQLException {
         int totalVarukorg = 0;
         if (purchase == 0) {
+            spaaaace();
             System.out.println("Varukorgen är tom!");
+            spaaaace();
             selectAllProducts();
         } else {
+            spaaaace();
             System.out.println("Produkter i varukorgen: ");
             for (Produkt produktIKorg : varukorg) {
                 System.out.println(produktIKorg.getNamn() + " " + produktIKorg.getPris() + "kr");
@@ -296,6 +307,7 @@ public class GUI {
             System.out.println("Totalt: " + totalVarukorg + "kr");
             System.out.println("0. Tillbaka");
             System.out.println("1. Köp");
+            spaaaace();
 
             String next = in.nextLine();
             int nextInt = Integer.parseInt(next);
@@ -313,12 +325,14 @@ public class GUI {
     public void findAverageBetyg() throws SQLException {
         int a = 0;
 
+        spaaaace();
         System.out.println("Välj en produkt!");
         System.out.println("0. Tillbaka");
         for (Produkt pro : produkter) {
             a++;
             System.out.println(a + ". " + pro.getNamn());
         }
+        spaaaace();
         String answer = in.nextLine();
         int tempCount = Integer.parseInt(answer);
 
@@ -326,6 +340,7 @@ public class GUI {
             mainMeny();
         }else {
             List<Recension> recensionUnique = new ArrayList<>();
+            List<Recension> recensionWithNoBetyg = new ArrayList<>();
 
 
 
@@ -337,15 +352,29 @@ public class GUI {
 
             int finalanswer = 0;
             for (Recension res : recensionUnique){
-                finalanswer = finalanswer + res.getBetygid();
+                if (res.getBetygid() == 0){
+                    recensionWithNoBetyg.add(res);
+                }else {
+                    finalanswer = finalanswer + res.getBetygid();
+                }
             }
 
             finalanswer = finalanswer / recensionUnique.size();
 
-            System.out.println(produkter.get(tempCount-1).getNamn());
-            System.out.println("Medelbetyg: " + finalanswer);
+            if (finalanswer == 0){
+                spaaaace();
+                System.out.println("Produkten har inte blivit betygsatt!");
+                spaaaace();
+                findAverageBetyg();
+            }else {
+                spaaaace();
+                System.out.println(produkter.get(tempCount-1).getNamn());
+                System.out.println("Medelbetyg: " + finalanswer);
+                spaaaace();
+                findAverageBetyg();
+            }
 
-            findAverageBetyg();
+
         }
 
 
@@ -354,6 +383,7 @@ public class GUI {
 
     public void skrivRecension() throws SQLException {
         int countItems = 0;
+        spaaaace();
         System.out.println("Välj en produkt att recensera");
         System.out.println("0. Tillbaka");
 
@@ -361,35 +391,50 @@ public class GUI {
             countItems++;
             System.out.println(countItems+ ". " +alla.getNamn());
         }
+        spaaaace();
         String answer = in.nextLine();
         int answerDigit = Integer.parseInt(answer);
 
-        System.out.println("Välj ett betyg för: " + produkter.get(answerDigit-1).getNamn());
-        System.out.println("1. " + betygs.get(1).getOmdöme());
-        System.out.println("2. " + betygs.get(2).getOmdöme());
-        System.out.println("3. " + betygs.get(3).getOmdöme());
-        System.out.println("4. " + betygs.get(4).getOmdöme());
 
-        String betygRec = in.nextLine();
-        int betygRate = Integer.parseInt(betygRec);
 
-        System.out.println("Skriv en kommentar");
+        if (answerDigit == 0) {
+            mainMeny();
+        }else {
+            spaaaace();
+            System.out.println("Välj ett betyg för: " + produkter.get(answerDigit-1).getNamn());
+            System.out.println("1. " + betygs.get(1).getOmdöme());
+            System.out.println("2. " + betygs.get(2).getOmdöme());
+            System.out.println("3. " + betygs.get(3).getOmdöme());
+            System.out.println("4. " + betygs.get(4).getOmdöme());
+            spaaaace();
 
-        String kommentarRate = in.nextLine();
+            String betygRec = in.nextLine();
+            int betygRate = Integer.parseInt(betygRec);
 
-        CallableStatement stm = con.prepareCall("Call rate(?,?,?,?)");
-        stm.setInt(1, betygRate);
-        stm.setString(2, kommentarRate);
-        stm.setInt(3, loggedInKund.getId());
-        stm.setInt(4, answerDigit);
-        stm.execute();
 
-        System.out.println("Det gick igenom!");
+            spaaaace();
+            System.out.println("Skriv en kommentar");
+            spaaaace();
 
-        skrivRecension();
-        //RECENSION
-        //BETYG
-        //BESKRIVER
+            String kommentarRate = in.nextLine();
+
+            CallableStatement stm = con.prepareCall("Call rate(?,?,?,?)");
+            stm.setInt(1, betygRate);
+            stm.setString(2, kommentarRate);
+            stm.setInt(3, loggedInKund.getId());
+            stm.setInt(4, answerDigit);
+            stm.execute();
+
+            spaaaace();
+            System.out.println("Det gick igenom!");
+            spaaaace();
+
+            skrivRecension();
+
+        }
+
+
+
 
     }
 
@@ -405,126 +450,45 @@ public class GUI {
     }
 
     public void purchaseProduct() throws SQLException {
-        CallableStatement stm;
 
-        int maxNumber = findMaxBeställningNr();
+        try{
+            CallableStatement stm;
 
-        for (int i = 0; i < varukorg.size(); i++) {
-            stm = con.prepareCall("call AddToCart((SELECT id from kund where förnamn = ?), ? ,?)");
-            stm.setString(1, loggedInKund.getFörnamn());
-            stm.setInt(2, maxNumber);
-            stm.setInt(3, varukorg.get(i).getId());
-            stm.execute();
-        }
+            int maxNumber = findMaxBeställningNr();
+            con.setAutoCommit(false);
 
-
-
-/*
-            if (purchase == 0) {
-                stm = con.prepareCall("call AddToCart((SELECT id from kund where förnamn = ?), (Select max(köpnr) from beställning)+10 ,?)");
+            for (int i = 0; i < varukorg.size(); i++) {
+                stm = con.prepareCall("call AddToCart((SELECT id from kund where förnamn = ?), ? ,?)");
                 stm.setString(1, loggedInKund.getFörnamn());
-                stm.setInt(2, produktid);
+                stm.setInt(2, maxNumber);
+                stm.setInt(3, varukorg.get(i).getId());
                 stm.execute();
-
-            } else {
-                stm = con.prepareCall("call AddToCart((SELECT id from kund where förnamn = ?), (Select max(köpnr) from beställning),?)");
-                stm.setString(1, loggedInKund.getFörnamn());
-                stm.setInt(2, produktid);
-                stm.execute();
-
             }
+            con.commit();
 
- */
-        System.out.println("Beställning lagd!");
-        purchase = 1;
+            System.out.println("Beställning lagd!");
+            purchase = 1;
 
-        imp.updateData();
-
-        /*
-
-        System.out.println("0. Tillbaka");
-        System.out.println("1. Köp igen");
-
-        String choice = in.next();
-
-        int choicee = Integer.parseInt(choice);
-
-        if (choicee == 0) {
-            showProductInfo(produktid);
-        }else if (choicee == 1){
-            purchaseProduct(produktid);
-        }
+            refresh();
 
 
-         */
 
-
-    }
-
-    public int fullCounterInt(int produktid) throws SQLException {
-
-        int i = 0;
-        int y = 0;
-
-        rs = stmt.executeQuery("select lager from produkt");
-
-        while (rs.next()) {
-            if (i == produktid - 1) {
-                i++;
-                y = rs.getInt("lager");
-            } else {
-                i++;
-                rs.getInt("lager");
-            }
-        }
-
-        return y;
-    }
-
-    public void fullCounterString() throws SQLException {
-
-        rs = stmt.executeQuery("select id, förnamn,efternamn,adress, mail,telefonnummer,ortid,lösenord from kund");
-
-
-        while (rs.next()) {
-            Kund temp = new Kund();
-            temp.setId(rs.getInt("id"));
-            temp.setFörnamn(rs.getString("förnamn"));
-            temp.setEfternamn(rs.getString("efternamn"));
-            temp.setAddress(rs.getString("adress"));
-            temp.setMail(rs.getString("mail"));
-            temp.setTelefonnummer(rs.getInt("telefonnummer"));
-            temp.setOrtID(rs.getInt("ortid"));
-            temp.setLösenord(rs.getString("lösenord"));
-
-            kunder.add(temp);
-        }
-    }
-
-    public void setupDatabaseConnection() {
-
-        try {
-            Properties p = new Properties();
-            p.load(new FileInputStream("src/Properties.properties"));
-
-            Class.forName("com.mysql.cj.jdbc.Driver");
-
-            con = DriverManager.getConnection(p.getProperty("connectionString"), p.getProperty("name"), p.getProperty("password"));
-
-            Statement stmt = con.createStatement();
-
-            ResultSet rs = stmt.executeQuery("SELECT namn from produkt");
-
-            while (rs.next()) {
-                String temp = rs.getString("namn");
-                System.out.println(temp);
-            }
-
-        } catch (Exception e) {
+        }catch (SQLException e){
+            con.rollback();
+            System.out.println("Ett fel uppstod med beställningen.");
             e.printStackTrace();
         }
 
 
+
+    }
+
+    public void closeProgram() throws SQLException {
+        System.out.println("Hej då!");
+        imp.closeBackend();
+        con.close();
+        stmt.close();
+        System.exit(0);
     }
 
     public void spaaaace() {
